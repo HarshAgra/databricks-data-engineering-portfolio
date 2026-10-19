@@ -1,22 +1,51 @@
+## Architecture
 
-# Project 01: Multi-Source Data Ingestion Framework
+The project demonstrates three ingestion approaches using the Online Retail II dataset in Databricks.
 
-## Objective
-Build a Databricks data ingestion framework that processes CSV, JSON, and Parquet files into Delta tables.
+```text
+Online Retail II CSV Files
+          |
+          v
+   Unity Catalog Volume
+          |
+          +--------------------+
+          |                    |
+          v                    v
+   PySpark DataFrame       Cleaned CSV Files
+          |                    |
+          v                    +------------------+
+   retail_bronze                                  |
+                               +------------------+
+                               |                  |
+                               v                  v
+                         COPY INTO           Auto Loader
+                               |                  |
+                               v                  v
+                       retail_copy_into   retail_autoloader_bronze
+```
 
-## Concepts Covered
-- Batch data ingestion
-- Auto Loader
-- COPY INTO
-- Schema inference and schema evolution
-- Delta Lake fundamentals
-- Incremental data ingestion
+## Ingestion Methods
 
-## Technology Stack
+1. **PySpark write:** Read the source CSV, standardize column names, and save the data as a Delta table.
+2. **COPY INTO:** Load CSV files into a Delta table using SQL, with file-tracking metadata to avoid reloading previously processed files.
+3. **Auto Loader:** Use `cloudFiles` with Structured Streaming and checkpoints to ingest new files incrementally.
+
+## Validation
+
+- Verified row counts across the three ingestion tables.
+- Tested incremental ingestion using two sample records.
+- Reran `COPY INTO` to validate that previously loaded files were skipped.
+
+## Technologies
+
 - Databricks
 - Apache Spark / PySpark
-- SQL
 - Delta Lake
+- Unity Catalog Volumes
+- Auto Loader
+- Structured Streaming
+- SQL
 
-## Status
-Planned — implementation will be added progressively.
+## Dataset
+
+Online Retail II dataset from Kaggle. The dataset is not included in this repository; users must obtain it from the original source.
